@@ -1,15 +1,16 @@
+import time
+import sys
+
 class Node:
     def __init__(self, key):
         self.left = None
         self.right = None
         self.value = key
 
-
 class BST:
     def __init__(self):
         self.root = None
 
-    # Método de inserção
     def insert(self, key):
         if self.root is None:
             self.root = Node(key)
@@ -28,26 +29,19 @@ class BST:
             else:
                 self._insert_recursive(node.right, key)
 
-    # Método de busca
     def search(self, key):
         return self._search_recursive(self.root, key)
 
     def _search_recursive(self, node, key):
-        # Caso base: nó é None ou o valor foi encontrado
         if node is None:
             return False
-        
         if node.value == key:
             return True
-        
-        # Se o valor a ser buscado for menor, vai para a subárvore esquerda
-        if key < node.value:
+        elif key < node.value:
             return self._search_recursive(node.left, key)
-        
-        # Se o valor a ser buscado for maior, vai para a subárvore direita
-        return self._search_recursive(node.right, key)
+        else:
+            return self._search_recursive(node.right, key)
 
-    # Percurso In-order
     def inorder(self):
         elements = []
         self._inorder_recursive(self.root, elements)
@@ -59,42 +53,37 @@ class BST:
             elements.append(node.value)
             self._inorder_recursive(node.right, elements)
 
-    # Percurso Pre-order
-    def preorder(self):
-        elements = []
-        self._preorder_recursive(self.root, elements)
-        return elements
+def measure_time_and_memory(func, *args):
+    start_time = time.time()
+    start_memory = sys.getsizeof(args)
 
-    def _preorder_recursive(self, node, elements):
-        if node:
-            elements.append(node.value)
-            self._preorder_recursive(node.left, elements)
-            self._preorder_recursive(node.right, elements)
+    result = func(*args)
+    
+    end_time = time.time()
+    end_memory = sys.getsizeof(args)
 
-    # Percurso Post-order
-    def postorder(self):
-        elements = []
-        self._postorder_recursive(self.root, elements)
-        return elements
+    elapsed_time = end_time - start_time
+    memory_usage = end_memory - start_memory
+    
+    return result, elapsed_time, memory_usage
 
-    def _postorder_recursive(self, node, elements):
-        if node:
-            self._postorder_recursive(node.left, elements)
-            self._postorder_recursive(node.right, elements)
-            elements.append(node.value)
-
-
-# Testando a implementação
 bst = BST()
+
 elements = [50, 30, 70, 20, 40, 60, 80]
 for elem in elements:
     bst.insert(elem)
 
-# Testando a busca de um valor
 search_value = 40
-found = bst.search(search_value)
 
-if found:
+print(f"Buscando o valor {search_value} na árvore...")
+result, elapsed_time, memory_usage = measure_time_and_memory(bst.search, search_value)
+
+if result:
     print(f"O valor {search_value} foi encontrado na árvore.")
 else:
     print(f"O valor {search_value} não foi encontrado na árvore.")
+
+print(f"Tempo de execução: {elapsed_time:.6f} segundos")
+print(f"Memória usada: {memory_usage} bytes")
+
+print("\nIn-order:", bst.inorder())
